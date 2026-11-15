@@ -45,6 +45,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fraunces.variable} ${instrument.variable}`}>
       <body>
+        {/*
+          Pre-React failsafe: if hydration/GSAP never runs (slow iOS, blocked JS),
+          still dismiss the logo overlay and unlock scroll within ~2.6s.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var MS=2600;function unlock(){try{document.documentElement.style.removeProperty("overflow");document.body.style.removeProperty("overflow")}catch(e){}}function kill(){try{document.documentElement.dataset.mbongoPreloaderDone="1";var el=document.querySelector("[data-mbongo-preloader],.preloader");if(el){el.classList.add("is-done");el.style.opacity="0";el.style.visibility="hidden";el.style.pointerEvents="none"}unlock()}catch(e){unlock()}}setTimeout(kill,MS)})();`,
+          }}
+        />
         <ThemeProvider>
           <a className="skip-link" href="#main">
             Skip to content

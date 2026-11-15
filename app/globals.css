@@ -1020,6 +1020,14 @@ input {
   color: var(--ink);
 }
 
+/* Failsafe / dismiss — must beat any in-flight GSAP opacity */
+.preloader.is-done {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  touch-action: auto;
+}
+
 [data-theme="night"] .preloader {
   background:
     radial-gradient(
