@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { getGsap } from "@/lib/motion/register";
 import { prefersReducedMotion } from "@/lib/motion/reduced";
 
-/** Preloader — MBONGO wordmark only: letters settle, brass rule draws, lift away. */
+/**
+ * Preloader — MBONGO wordmark only: letters settle, brass rule draws, fade/lift away.
+ * Avoids iOS clip-path + overflow shift that clipped the leading “M”.
+ */
 export function Preloader() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [done, setDone] = useState(false);
@@ -18,22 +21,43 @@ export function Preloader() {
     const root = rootRef.current;
     if (!root) return;
 
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
     const { gsap } = getGsap();
+    const stage = root.querySelector(".preloader__stage");
     const letters = root.querySelectorAll(".preloader__letter");
     const rule = root.querySelector(".preloader__rule");
 
+    const finish = () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      setDone(true);
+    };
+
     const ctx = gsap.context(() => {
       gsap.set(letters, { y: 22, opacity: 0 });
-      gsap.set(rule, { scaleX: 0, transformOrigin: "left center" });
+      gsap.set(rule, { scaleX: 0, transformOrigin: "center center" });
 
       const tl = gsap.timeline({
         defaults: { ease: "power3.out" },
         onComplete: () => {
+          gsap.to(stage, {
+            y: -28,
+            opacity: 0,
+            duration: 0.55,
+            ease: "power3.inOut",
+          });
           gsap.to(root, {
-            clipPath: "inset(0 0 100% 0)",
-            duration: 0.7,
-            ease: "power4.inOut",
-            onComplete: () => setDone(true),
+            opacity: 0,
+            duration: 0.55,
+            ease: "power3.inOut",
+            delay: 0.08,
+            onComplete: finish,
           });
         },
       });
@@ -45,13 +69,15 @@ export function Preloader() {
         stagger: 0.05,
       })
         .to(rule, { scaleX: 1, duration: 0.5 }, "-=0.28")
-        .to({}, { duration: 0.4 });
+        .to({}, { duration: 0.35 });
     }, root);
 
-    const hard = window.setTimeout(() => setDone(true), 2800);
+    const hard = window.setTimeout(finish, 3200);
     return () => {
       ctx.revert();
       window.clearTimeout(hard);
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
     };
   }, []);
 
