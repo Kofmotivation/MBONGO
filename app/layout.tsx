@@ -66,7 +66,7 @@ export default function RootLayout({
                 "Media platform exploring wealth, business, culture and money across Africa and the global Black diaspora.",
               potentialAction: {
                 "@type": "SearchAction",
-                target: "https://mbongo.example/index?q={search_term_string}",
+                target: "https://mbongo.example/ledger?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             }}

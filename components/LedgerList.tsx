@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   filterLedger,
   hrefFor,
@@ -35,6 +35,18 @@ function formatDate(iso: string) {
   }).format(new Date(iso));
 }
 
+function useHoverPreview() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const sync = () => setEnabled(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return enabled;
+}
+
 export function LedgerList({
   items,
   title = "Latest",
@@ -53,6 +65,8 @@ export function LedgerList({
   const [format, setFormat] = useState<Format | "all">("all");
   const [q, setQ] = useState("");
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const hoverPreview = useHoverPreview();
+  const showPreview = preview && hoverPreview;
 
   const rows = useMemo(() => {
     if (items && !showSearch && section === "all" && format === "all" && !q) {
@@ -121,7 +135,7 @@ export function LedgerList({
 
       <div
         className={
-          preview ? "ledger__body ledger__body--preview" : "ledger__body"
+          showPreview ? "ledger__body ledger__body--preview" : "ledger__body"
         }
       >
         <div
@@ -132,9 +146,13 @@ export function LedgerList({
             <Link
               key={item.slug}
               href={hrefFor(item)}
-              className={`ledger-row${activeSlug === item.slug ? " is-active" : ""}`}
-              onMouseEnter={() => setActiveSlug(item.slug)}
-              onFocus={() => setActiveSlug(item.slug)}
+              className={`ledger-row${showPreview && activeSlug === item.slug ? " is-active" : ""}`}
+              onMouseEnter={() => {
+                if (showPreview) setActiveSlug(item.slug);
+              }}
+              onFocus={() => {
+                if (showPreview) setActiveSlug(item.slug);
+              }}
               onBlur={() =>
                 setActiveSlug((s) => (s === item.slug ? null : s))
               }
@@ -147,7 +165,7 @@ export function LedgerList({
           ))}
         </div>
 
-        {preview ? (
+        {showPreview ? (
           <aside
             className={`ledger-preview${previewImage ? " has-cover" : ""}`}
             aria-hidden="true"

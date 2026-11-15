@@ -47,7 +47,7 @@ export default function AboutPage() {
               <p key={p}>{p}</p>
             ))}
             <p className="about-page__links">
-              <Link href="/index">Browse the ledger</Link>
+              <Link href="/ledger">Browse the ledger</Link>
               <Link href="/#newsletter">Join MBONGO Weekly</Link>
             </p>
           </div>

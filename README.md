@@ -28,7 +28,7 @@ npm run build && npm start
 | `/wealth` `/business` `/culture` `/money` | Chapter |
 | `/articles/[slug]` | The Spread |
 | `/interviews/[slug]` | The Record |
-| `/index` | The Ledger (search + filters) |
+| `/ledger` | The Ledger / Index (search + filters); `/index` redirects here |
 | `/about` `/contact` | Utility |
 
 ## Docs

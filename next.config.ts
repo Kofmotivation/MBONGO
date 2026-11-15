@@ -6,7 +6,11 @@ const nextConfig: NextConfig = {
   },
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   async redirects() {
-    return [{ source: "/ledger", destination: "/index", permanent: false }];
+    return [
+      // Avoid app/index colliding with root on some hosts; keep old URL working
+      { source: "/index", destination: "/ledger", permanent: false },
+      { source: "/index/:path*", destination: "/ledger", permanent: false },
+    ];
   },
 };
 
