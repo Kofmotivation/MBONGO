@@ -23,7 +23,6 @@ export function Masthead() {
 
         <div className="masthead__right">
           <Link href="/ledger">Index</Link>
-          <Link href="/ledger#latest">Latest</Link>
           <Link href="/#newsletter">Newsletter</Link>
           <button
             type="button"
